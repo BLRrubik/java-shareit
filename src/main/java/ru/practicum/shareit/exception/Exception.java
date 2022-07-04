@@ -1,20 +1,17 @@
-package ru.practicum.shareit.user;
+package ru.practicum.shareit.exception;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-/**
- * // TODO .
- */
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class User {
-    private Long id;
-    private String name;
-    private String email;
+public class Exception {
+    private String message;
+    private LocalDateTime dateTime;
 }
