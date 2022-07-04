@@ -2,15 +2,14 @@ package ru.practicum.shareit.user.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.user.dto.UserDto;
-import ru.practicum.shareit.user.dto.UserUpdateDto;
 import ru.practicum.shareit.user.excepton.UserAlreadyExistsException;
 import ru.practicum.shareit.user.excepton.UserNotFoundException;
 import ru.practicum.shareit.user.model.User;
+import ru.practicum.shareit.user.request.UserCreateRequest;
+import ru.practicum.shareit.user.request.UserUpdateRequest;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -29,18 +28,19 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Optional<User> findById(Long userId) {
+    public User findById(Long userId) {
         if (users.stream().noneMatch(u -> u.getId().equals(userId))) {
             throw new UserNotFoundException("User with id: "+ userId +" is not found");
         }
 
         return users.stream()
                 .filter(u -> u.getId().equals(userId))
-                .findFirst();
+                .findFirst()
+                .get();
     }
 
     @Override
-    public Optional<User> createUser(UserDto request) {
+    public User createUser(UserCreateRequest request) {
         if (users.stream().anyMatch(u -> u.getEmail().equals(request.getEmail()))) {
             throw new UserAlreadyExistsException("User with email: "+ request.getEmail() + " is already exists");
         }
@@ -53,26 +53,26 @@ public class UserServiceImpl implements UserService {
 
         users.add(user);
 
-        return Optional.of(user);
+        return user;
     }
 
     @Override
-    public Optional<User> updateUser(UserUpdateDto request, Long userId) {
+    public User updateUser(UserUpdateRequest request, Long userId) {
         if (users.stream().anyMatch(u -> u.getEmail().equals(request.getEmail()))) {
             throw new UserAlreadyExistsException("User with email: "+ request.getEmail() + " is already exists");
         }
 
-        User user = findById(userId).get();
+        User user = findById(userId);
 
         user.setName(request.getName() != null ? request.getName() : user.getName());
         user.setEmail(request.getEmail() != null ? request.getEmail() : user.getEmail());
 
-        return Optional.of(user);
+        return user;
     }
 
     @Override
     public void deleteUser(Long userId) {
-        User user = findById(userId).get();
+        User user = findById(userId);
 
         users.remove(user);
     }

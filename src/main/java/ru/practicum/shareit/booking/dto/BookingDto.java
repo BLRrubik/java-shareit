@@ -10,9 +10,7 @@ import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDate;
 
-/**
- * // TODO .
- */
+
 @Getter
 @Setter
 @AllArgsConstructor

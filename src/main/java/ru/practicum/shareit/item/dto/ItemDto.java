@@ -4,11 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import ru.practicum.shareit.user.model.User;
+import ru.practicum.shareit.user.dto.UserDto;
 
-/**
- * // TODO .
- */
 @Getter
 @Setter
 @AllArgsConstructor
@@ -18,6 +15,5 @@ public class ItemDto {
     private String name;
     private String description;
     private boolean available;
-    private User owner;
-
+    private UserDto owner;
 }

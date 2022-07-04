@@ -2,46 +2,101 @@ package ru.practicum.shareit.item.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.item.InMemoryItemStorage;
-import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.exception.ItemNotFoundException;
+import ru.practicum.shareit.item.exception.ItemOwnerException;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.item.request.ItemCreateRequest;
+import ru.practicum.shareit.item.request.ItemUpdateRequest;
+import ru.practicum.shareit.user.model.User;
+import ru.practicum.shareit.user.service.UserService;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class ItemServiceImpl implements ItemService {
-    private final InMemoryItemStorage storage;
+    private List<Item> items;
+    private Long counter;
+    private final UserService userService;
 
     @Autowired
-    public ItemServiceImpl(InMemoryItemStorage storage) {
-        this.storage = storage;
+    public ItemServiceImpl(UserService userService) {
+        this.userService = userService;
+        items = new ArrayList<>();
+        counter = 1L;
     }
 
     @Override
     public List<Item> getAll() {
-        return storage.getAll();
+        return items;
     }
 
     @Override
-    public Item getItem(Long id) {
-        return null;
+    public Item findById(Long itemId) {
+        if (items.stream().noneMatch(i -> i.getId().equals(itemId))) {
+            throw new ItemNotFoundException("item with id: "+ itemId +" not found");
+        }
+
+        return items.stream()
+                .filter(i -> i.getId().equals(itemId))
+                .findFirst()
+                .get();
     }
 
     @Override
-    public Optional<Item> addItem(ItemDto request, String userPrincipal) {
+    public List<Item> getItemOfUser(Long userPrincipal) {
+        User user = userService.findById(userPrincipal);
+
+        return items.stream()
+                .filter(i -> i.getOwner().getId().equals(user.getId()))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public Item addItem(ItemCreateRequest request, Long userPrincipal) {
+        User user = userService.findById(userPrincipal);
+
         Item item = new Item();
 
-        return Optional.empty();
+        item.setId(counter++);
+        item.setName(request.getName());
+        item.setDescription(request.getDescription());
+        item.setAvailable(request.getAvailable());
+        item.setOwner(user);
+
+        items.add(item);
+
+        return item;
     }
 
     @Override
-    public Optional<Item> updateItem(ItemDto request, String userPrincipal) {
-        return Optional.empty();
+    public Item updateItem(ItemUpdateRequest request, Long itemId, Long userPrincipal) {
+        User user = userService.findById(userPrincipal);
+
+        Item item = findById(itemId);
+
+        if (!item.getOwner().getId().equals(user.getId())) {
+            throw new ItemOwnerException("user with id: "+ user.getId() +" is not owner of item with id: " + itemId);
+        }
+
+        item.setName(request.getName() != null ? request.getName() : item.getName());
+        item.setDescription(request.getDescription() != null ? request.getDescription() : item.getDescription());
+        item.setAvailable(request.getAvailable() != null ? request.getAvailable() : item.isAvailable());
+
+        return item;
     }
 
     @Override
     public List<Item> search(String text) {
-        return null;
+        if (text.isEmpty()) {
+            return List.of();
+        }
+
+        return items.stream()
+                .filter(i -> i.getDescription().toLowerCase().contains(text.toLowerCase())
+                        || i.getName().toLowerCase().contains(text.toLowerCase()))
+                .filter(Item::isAvailable)
+                .collect(Collectors.toList());
     }
 }

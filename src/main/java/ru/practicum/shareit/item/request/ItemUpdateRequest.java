@@ -1,17 +1,16 @@
-package ru.practicum.shareit.user.model;
+package ru.practicum.shareit.item.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class User {
-    private Long id;
+public class ItemUpdateRequest {
     private String name;
-    private String email;
+    private String description;
+    private Boolean available;
 }

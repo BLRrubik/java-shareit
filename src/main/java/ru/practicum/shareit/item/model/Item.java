@@ -6,9 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import ru.practicum.shareit.user.model.User;
 
-/**
- * // TODO .
- */
+
 @Getter
 @Setter
 @AllArgsConstructor
