@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import ru.practicum.shareit.user.dto.UserDto;
 
 @Getter
 @Setter
@@ -15,5 +14,16 @@ public class ItemDto {
     private String name;
     private String description;
     private boolean available;
-    private UserDto owner;
+    private User owner;
+    private Long requestId;
+
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class User {
+        private Long id;
+        private String name;
+    }
 }
+

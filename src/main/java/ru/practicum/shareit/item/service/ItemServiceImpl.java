@@ -57,6 +57,8 @@ public class ItemServiceImpl implements ItemService {
     public Item addItem(ItemCreateRequest request, Long userPrincipal) {
         User user = userService.findById(userPrincipal);
 
+        //todo дальше здесь будет проверка на существование реквеста
+
         Item item = new Item();
 
         item.setId(counter++);

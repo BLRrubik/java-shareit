@@ -13,4 +13,5 @@ public class ItemUpdateRequest {
     private String name;
     private String description;
     private Boolean available;
+    private Long requestId;
 }
