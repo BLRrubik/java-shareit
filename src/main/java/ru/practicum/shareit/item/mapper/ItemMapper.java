@@ -16,7 +16,8 @@ public class ItemMapper {
                 new ItemDto.User(
                         item.getOwner().getId(),
                         item.getOwner().getName()
-                )
+                ),
+                item.getRequest().getId()
         );
     }
 
