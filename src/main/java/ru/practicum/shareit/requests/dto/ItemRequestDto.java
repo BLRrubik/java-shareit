@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
 
@@ -20,4 +19,13 @@ public class ItemRequestDto {
     private String description;
     private User requestor;
     private LocalDateTime created;
+
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class User {
+        private Long id;
+        private String name;
+    }
 }

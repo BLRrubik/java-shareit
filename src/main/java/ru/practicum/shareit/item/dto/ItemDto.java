@@ -15,7 +15,7 @@ public class ItemDto {
     private String description;
     private boolean available;
     private User owner;
-    private Long requestId;
+    private Request request;
 
     @Getter
     @Setter
@@ -25,5 +25,15 @@ public class ItemDto {
         private Long id;
         private String name;
     }
+
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class Request {
+        private Long id;
+    }
+
+
 }
 
