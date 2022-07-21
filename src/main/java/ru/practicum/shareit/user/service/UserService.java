@@ -16,4 +16,6 @@ public interface UserService {
     User updateUser(UserUpdateRequest request, Long userId);
 
     void deleteUser(Long userId);
+
+    User checkUserBookings(Long userId, Long itemId);
 }
