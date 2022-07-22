@@ -12,6 +12,6 @@ public interface UserRepo extends JpaRepository<User, Long> {
     @Query(value = "select * from users as u\n" +
             "left join bookings b on u.id = b.booker_id\n" +
             "left join items i on b.item_id = i.id\n" +
-            "where u.id = ? and i.id = ? and b.end_date_time < now();", nativeQuery = true)
+            "where u.id = ? and i.id = ? and b.end_date < now();", nativeQuery = true)
     User checkUserBooking(Long userId, Long itemId);
 }

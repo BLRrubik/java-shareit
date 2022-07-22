@@ -91,9 +91,7 @@ public class ItemServiceImpl implements ItemService {
         item.setAvailable(request.getAvailable());
         item.setOwner(user);
 
-        ItemDto itemDto = ItemMapper.toDto(itemRepo.save(item));
-
-        return itemDto;
+        return ItemMapper.toDto(itemRepo.save(item));
     }
 
     @Override

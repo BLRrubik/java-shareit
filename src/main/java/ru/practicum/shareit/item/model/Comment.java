@@ -31,6 +31,6 @@ public class Comment {
     @OneToOne(fetch = FetchType.LAZY)
     private User author;
 
-    @Column(name = "created")
+    @Column(name = "created_at")
     private LocalDateTime created;
 }
