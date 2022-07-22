@@ -1,6 +1,6 @@
 package ru.practicum.shareit.item.exception;
 
-public class ItemDontHaveBookingForUserException extends RuntimeException{
+public class ItemDontHaveBookingForUserException extends RuntimeException {
     public ItemDontHaveBookingForUserException() {
     }
 

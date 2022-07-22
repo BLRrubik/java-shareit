@@ -1,6 +1,6 @@
 package ru.practicum.shareit.booking.exceptions;
 
-public class BookingAccessException extends RuntimeException{
+public class BookingAccessException extends RuntimeException {
     public BookingAccessException() {
     }
 

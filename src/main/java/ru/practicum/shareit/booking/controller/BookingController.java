@@ -3,7 +3,6 @@ package ru.practicum.shareit.booking.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.booking.BookingStatus;
 import ru.practicum.shareit.booking.State;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.requests.BookingCreateRequest;
@@ -36,7 +35,7 @@ public class BookingController {
                                                      @RequestParam(value = "approved", required = true) boolean approve,
                                                      @RequestHeader("X-Sharer-User-Id") Long userPrincipal) {
 
-        return ResponseEntity.of(Optional.of(bookingService.approveBooking(bookingId,approve,userPrincipal)));
+        return ResponseEntity.of(Optional.of(bookingService.approveBooking(bookingId, approve, userPrincipal)));
     }
 
     @GetMapping("/{bookingId}")
@@ -49,7 +48,7 @@ public class BookingController {
 
     @GetMapping()
     public ResponseEntity<List<BookingDto>> getBookingsByCurrentUser(@RequestParam(value = "state", required = false,
-                                                                     defaultValue = "ALL") State state,
+            defaultValue = "ALL") State state,
                                                                      @RequestHeader("X-Sharer-User-Id")
                                                                      Long userPrincipal) {
         return ResponseEntity.of(Optional.of(bookingService.getBookingsByUser(userPrincipal, state)));
@@ -58,8 +57,8 @@ public class BookingController {
     @GetMapping("/owner")
     public ResponseEntity<List<BookingDto>> getBookingsByOwner(@RequestParam(value = "state", required = false,
             defaultValue = "ALL") State state,
-                                                                     @RequestHeader("X-Sharer-User-Id")
-                                                                     Long userPrincipal) {
+                                                               @RequestHeader("X-Sharer-User-Id")
+                                                               Long userPrincipal) {
         return ResponseEntity.of(Optional.of(bookingService.getBookingsByOwner(userPrincipal, state)));
     }
 }

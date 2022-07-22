@@ -64,7 +64,7 @@ public class BookingServiceImpl implements BookingService {
         booking.setItem(item);
         booking.setStatus(BookingStatus.WAITING);
 
-        Long ownerId =booking.getItem().getOwner().getId();
+        Long ownerId = booking.getItem().getOwner().getId();
 
         Booking lastBooking = bookingRepo.findLastBooking(ownerId);
 

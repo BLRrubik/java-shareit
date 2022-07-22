@@ -59,7 +59,7 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public Item getItemById(Long itemId) {
         if (!itemRepo.findById(itemId).isPresent()) {
-            throw new ItemNotFoundException("item with id: "+ itemId +" not found");
+            throw new ItemNotFoundException("item with id: " + itemId + " not found");
         }
 
         Item item = itemRepo.findById(itemId).get();
@@ -105,7 +105,7 @@ public class ItemServiceImpl implements ItemService {
         Item item = getItemById(itemId);
 
         if (!item.getOwner().getId().equals(user.getId())) {
-            throw new ItemOwnerException("user with id: "+ user.getId() +" is not owner of item with id: " + itemId);
+            throw new ItemOwnerException("user with id: " + user.getId() + " is not owner of item with id: " + itemId);
         }
 
         item.setName(request.getName() != null ? request.getName() : item.getName());
@@ -138,7 +138,7 @@ public class ItemServiceImpl implements ItemService {
 
         User user = userService.findById(userPrincipal);
 
-        if (userService.checkUserBookings(user.getId(), item.getId())==null) {
+        if (userService.checkUserBookings(user.getId(), item.getId()) == null) {
             throw new ItemDontHaveBookingForUserException("User with id " + user.getId() +
                     " dont have any bookings for item with id " + item.getId());
         }
@@ -165,8 +165,7 @@ public class ItemServiceImpl implements ItemService {
         if (!itemDto.getOwner().getId().equals(userPrincipal)) {
             nextBooking = null;
             lastBooking = null;
-        }
-        else {
+        } else {
             lastBooking = bookingRepo.findLastBooking(itemDto.getOwner().getId());
             nextBooking = bookingRepo.findNextBooking(itemDto.getOwner().getId());
         }

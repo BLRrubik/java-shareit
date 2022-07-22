@@ -17,7 +17,7 @@ public class BookingMapper {
                 new BookingDto.User(booking.getBooker().getId(),
                         booking.getBooker().getName()),
                 booking.getStatus()
-                );
+        );
     }
 
     public static List<BookingDto> toDtos(List<Booking> bookings) {

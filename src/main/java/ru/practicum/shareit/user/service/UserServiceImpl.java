@@ -9,7 +9,6 @@ import ru.practicum.shareit.user.repository.UserRepo;
 import ru.practicum.shareit.user.request.UserCreateRequest;
 import ru.practicum.shareit.user.request.UserUpdateRequest;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -29,7 +28,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User findById(Long userId) {
         if (!userRepo.findById(userId).isPresent()) {
-            throw new UserNotFoundException("User with id: "+ userId +" is not found");
+            throw new UserNotFoundException("User with id: " + userId + " is not found");
         }
 
         return userRepo.findById(userId).get();
@@ -49,7 +48,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User updateUser(UserUpdateRequest request, Long userId) {
         if (userRepo.findByEmail(request.getEmail()).isPresent()) {
-            throw new UserAlreadyExistsException("User with email: "+ request.getEmail() + " is already exists");
+            throw new UserAlreadyExistsException("User with email: " + request.getEmail() + " is already exists");
         }
 
         User user = findById(userId);

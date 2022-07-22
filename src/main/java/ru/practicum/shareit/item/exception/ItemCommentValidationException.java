@@ -1,6 +1,6 @@
 package ru.practicum.shareit.item.exception;
 
-public class ItemCommentValidationException extends RuntimeException{
+public class ItemCommentValidationException extends RuntimeException {
     public ItemCommentValidationException() {
     }
 
