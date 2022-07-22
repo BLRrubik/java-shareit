@@ -95,7 +95,7 @@ public class ItemServiceImpl implements ItemService {
 
         ItemDto itemDto = ItemMapper.toDto(itemRepo.save(item));
 
-        return setLastAndNextBooking(itemDto, userPrincipal);
+        return itemDto;
     }
 
     @Override
