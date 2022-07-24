@@ -1,6 +1,6 @@
 package ru.practicum.shareit.item.mapper;
 
-import ru.practicum.shareit.booking.repository.BookingRepo;
+import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
 
@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 
 public class ItemMapper {
 
-    private BookingRepo bookingRepo;
+    private BookingRepository bookingRepository;
 
 
     public static ItemDto toDto(Item item) {

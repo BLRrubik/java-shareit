@@ -6,7 +6,7 @@ import ru.practicum.shareit.user.model.User;
 
 import java.util.Optional;
 
-public interface UserRepo extends JpaRepository<User, Long> {
+public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByEmail(String email);
 
     @Query(value = "select * from users as u\n" +

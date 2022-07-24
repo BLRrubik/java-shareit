@@ -3,7 +3,7 @@ package ru.practicum.shareit.item.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.model.Booking;
-import ru.practicum.shareit.booking.repository.BookingRepo;
+import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.exception.ItemCommentValidationException;
@@ -14,8 +14,8 @@ import ru.practicum.shareit.item.mapper.CommentMapper;
 import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.item.repository.CommentRepo;
-import ru.practicum.shareit.item.repository.ItemRepo;
+import ru.practicum.shareit.item.repository.CommentRepository;
+import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.item.request.ItemCreateRequest;
 import ru.practicum.shareit.item.request.ItemUpdateRequest;
 import ru.practicum.shareit.user.model.User;
@@ -27,22 +27,22 @@ import java.util.stream.Collectors;
 
 @Service
 public class ItemServiceImpl implements ItemService {
-    private final ItemRepo itemRepo;
+    private final ItemRepository itemRepository;
     private final UserService userService;
-    private final BookingRepo bookingRepo;
-    private final CommentRepo commentRepo;
+    private final BookingRepository bookingRepository;
+    private final CommentRepository commentRepository;
 
     @Autowired
-    public ItemServiceImpl(UserService userService, ItemRepo itemRepo, BookingRepo bookingRepo, CommentRepo commentRepo) {
+    public ItemServiceImpl(UserService userService, ItemRepository itemRepository, BookingRepository bookingRepository, CommentRepository commentRepository) {
         this.userService = userService;
-        this.itemRepo = itemRepo;
-        this.bookingRepo = bookingRepo;
-        this.commentRepo = commentRepo;
+        this.itemRepository = itemRepository;
+        this.bookingRepository = bookingRepository;
+        this.commentRepository = commentRepository;
     }
 
     @Override
     public List<ItemDto> getAll(Long userPrincipal) {
-        List<ItemDto> itemDtos = ItemMapper.toDtos(itemRepo.findAll());
+        List<ItemDto> itemDtos = ItemMapper.toDtos(itemRepository.findAll());
 
         return setLastAndNextBookingForList(itemDtos, userPrincipal);
     }
@@ -51,18 +51,18 @@ public class ItemServiceImpl implements ItemService {
     public ItemDto findById(Long itemId, Long userPrincipal) {
         Item item = getItemById(itemId);
 
-        ItemDto itemDto = ItemMapper.toDto(itemRepo.save(item));
+        ItemDto itemDto = ItemMapper.toDto(itemRepository.save(item));
 
         return setLastAndNextBooking(itemDto, userPrincipal);
     }
 
     @Override
     public Item getItemById(Long itemId) {
-        if (!itemRepo.findById(itemId).isPresent()) {
+        if (!itemRepository.findById(itemId).isPresent()) {
             throw new ItemNotFoundException("item with id: " + itemId + " not found");
         }
 
-        Item item = itemRepo.findById(itemId).get();
+        Item item = itemRepository.findById(itemId).get();
 
         return item;
     }
@@ -71,7 +71,7 @@ public class ItemServiceImpl implements ItemService {
     public List<ItemDto> getItemOfUser(Long userPrincipal) {
         User user = userService.findById(userPrincipal);
 
-        List<Item> items = itemRepo.findAllByOwner(user);
+        List<Item> items = itemRepository.findAllByOwner(user);
 
         List<ItemDto> itemDtos = ItemMapper.toDtos(items);
 
@@ -91,7 +91,7 @@ public class ItemServiceImpl implements ItemService {
         item.setAvailable(request.getAvailable());
         item.setOwner(user);
 
-        return ItemMapper.toDto(itemRepo.save(item));
+        return ItemMapper.toDto(itemRepository.save(item));
     }
 
     @Override
@@ -108,9 +108,9 @@ public class ItemServiceImpl implements ItemService {
         item.setDescription(request.getDescription() != null ? request.getDescription() : item.getDescription());
         item.setAvailable(request.getAvailable() != null ? request.getAvailable() : item.isAvailable());
 
-        itemRepo.save(item);
+        itemRepository.save(item);
 
-        ItemDto itemDto = ItemMapper.toDto(itemRepo.save(item));
+        ItemDto itemDto = ItemMapper.toDto(itemRepository.save(item));
 
         return setLastAndNextBooking(itemDto, userPrincipal);
     }
@@ -122,7 +122,7 @@ public class ItemServiceImpl implements ItemService {
         }
 
         List<ItemDto> itemDtos = ItemMapper.toDtos(
-                itemRepo.findAllByNameOrDescriptionContainingIgnoreCaseAndAvailableTrue(text, text)
+                itemRepository.findAllByNameOrDescriptionContainingIgnoreCaseAndAvailableTrue(text, text)
         );
 
         return setLastAndNextBookingForList(itemDtos, userPrincipal);
@@ -150,7 +150,7 @@ public class ItemServiceImpl implements ItemService {
         comment.setText(request.getText());
         comment.setCreated(LocalDateTime.now());
 
-        return CommentMapper.toDto(commentRepo.save(comment));
+        return CommentMapper.toDto(commentRepository.save(comment));
     }
 
     private ItemDto setLastAndNextBooking(ItemDto itemDto, Long userPrincipal) {
@@ -162,8 +162,8 @@ public class ItemServiceImpl implements ItemService {
             nextBooking = null;
             lastBooking = null;
         } else {
-            lastBooking = bookingRepo.findLastBooking(itemDto.getOwner().getId());
-            nextBooking = bookingRepo.findNextBooking(itemDto.getOwner().getId());
+            lastBooking = bookingRepository.findLastBooking(itemDto.getOwner().getId());
+            nextBooking = bookingRepository.findNextBooking(itemDto.getOwner().getId());
         }
 
 
