@@ -1,6 +1,6 @@
 package ru.practicum.shareit.user.excepton;
 
-public class UserNotFoundException extends RuntimeException{
+public class UserNotFoundException extends RuntimeException {
     public UserNotFoundException() {
     }
 

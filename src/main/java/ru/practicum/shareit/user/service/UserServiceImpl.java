@@ -5,61 +5,50 @@ import org.springframework.stereotype.Service;
 import ru.practicum.shareit.user.excepton.UserAlreadyExistsException;
 import ru.practicum.shareit.user.excepton.UserNotFoundException;
 import ru.practicum.shareit.user.model.User;
+import ru.practicum.shareit.user.repository.UserRepository;
 import ru.practicum.shareit.user.request.UserCreateRequest;
 import ru.practicum.shareit.user.request.UserUpdateRequest;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class UserServiceImpl implements UserService {
-    private List<User> users;
-    private Long counter;
+    private final UserRepository userRepository;
 
     @Autowired
-    public UserServiceImpl() {
-        users = new ArrayList<>();
-        counter = 1L;
+    public UserServiceImpl(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 
     @Override
     public List<User> getAll() {
-        return users;
+        return userRepository.findAll();
     }
 
     @Override
     public User findById(Long userId) {
-        if (users.stream().noneMatch(u -> u.getId().equals(userId))) {
-            throw new UserNotFoundException("User with id: "+ userId +" is not found");
+        if (!userRepository.findById(userId).isPresent()) {
+            throw new UserNotFoundException("User with id: " + userId + " is not found");
         }
 
-        return users.stream()
-                .filter(u -> u.getId().equals(userId))
-                .findFirst()
-                .get();
+        return userRepository.findById(userId).get();
     }
 
     @Override
     public User createUser(UserCreateRequest request) {
-        if (users.stream().anyMatch(u -> u.getEmail().equals(request.getEmail()))) {
-            throw new UserAlreadyExistsException("User with email: "+ request.getEmail() + " is already exists");
-        }
 
         User user = new User();
 
-        user.setId(counter++);
         user.setName(request.getName());
         user.setEmail(request.getEmail());
 
-        users.add(user);
-
-        return user;
+        return userRepository.save(user);
     }
 
     @Override
     public User updateUser(UserUpdateRequest request, Long userId) {
-        if (users.stream().anyMatch(u -> u.getEmail().equals(request.getEmail()))) {
-            throw new UserAlreadyExistsException("User with email: "+ request.getEmail() + " is already exists");
+        if (userRepository.findByEmail(request.getEmail()).isPresent()) {
+            throw new UserAlreadyExistsException("User with email: " + request.getEmail() + " is already exists");
         }
 
         User user = findById(userId);
@@ -67,13 +56,17 @@ public class UserServiceImpl implements UserService {
         user.setName(request.getName() != null ? request.getName() : user.getName());
         user.setEmail(request.getEmail() != null ? request.getEmail() : user.getEmail());
 
-        return user;
+        return userRepository.save(user);
     }
 
     @Override
     public void deleteUser(Long userId) {
         User user = findById(userId);
 
-        users.remove(user);
+        userRepository.delete(user);
+    }
+
+    public User checkUserBookings(Long userId, Long itemId) {
+        return userRepository.checkUserBooking(userId, itemId);
     }
 }

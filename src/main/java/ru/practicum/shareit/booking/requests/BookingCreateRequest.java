@@ -1,4 +1,4 @@
-package ru.practicum.shareit.exception;
+package ru.practicum.shareit.booking.requests;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -11,7 +11,8 @@ import java.time.LocalDateTime;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Exception {
-    private String message;
-    private LocalDateTime dateTime;
+public class BookingCreateRequest {
+    private LocalDateTime start;
+    private LocalDateTime end;
+    private Long itemId;
 }

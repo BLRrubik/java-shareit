@@ -1,5 +1,6 @@
 package ru.practicum.shareit.item.mapper;
 
+import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
 
@@ -7,7 +8,22 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class ItemMapper {
+
+    private BookingRepository bookingRepository;
+
+
     public static ItemDto toDto(Item item) {
+
+        List<ItemDto.Comment> comments = item.getComments().stream()
+                .map(comment -> new ItemDto.Comment(
+                        comment.getId(),
+                        comment.getText(),
+                        comment.getAuthor().getName(),
+                        comment.getCreated()
+                ))
+                .collect(Collectors.toList());
+
+
         return new ItemDto(
                 item.getId(),
                 item.getName(),
@@ -17,7 +33,8 @@ public class ItemMapper {
                         item.getOwner().getId(),
                         item.getOwner().getName()
                 ),
-                item.getRequest() != null ? new ItemDto.Request(item.getRequest().getId()) : null
+                item.getRequest() != null ? new ItemDto.Request(item.getRequest().getId()) : null,
+                comments
         );
     }
 

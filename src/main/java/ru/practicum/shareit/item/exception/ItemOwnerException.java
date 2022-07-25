@@ -1,6 +1,6 @@
 package ru.practicum.shareit.item.exception;
 
-public class ItemOwnerException extends RuntimeException{
+public class ItemOwnerException extends RuntimeException {
     public ItemOwnerException() {
     }
 
