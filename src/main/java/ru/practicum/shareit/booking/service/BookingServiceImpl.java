@@ -21,6 +21,7 @@ import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.UserService;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -64,10 +65,6 @@ public class BookingServiceImpl implements BookingService {
         booking.setBooker(booker);
         booking.setItem(item);
         booking.setStatus(BookingStatus.WAITING);
-
-        Long ownerId = booking.getItem().getOwner().getId();
-
-        Booking lastBooking = bookingRepository.findLastBooking(ownerId);
 
         return BookingMapper.toDto(bookingRepository.save(booking));
     }
@@ -150,13 +147,39 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingDto> getBookingsByOwner(Long userPrincipal, State state) {
-        User booker = userService.findById(userPrincipal);
+    public List<BookingDto> getBookingsByOwner(Long userPrincipal, String stringState) {
+        User owner = userService.findById(userPrincipal);
 
-        List<Booking> bookings = bookingRepository.findForOwner(booker.getId());
+        State state;
+
+        try {
+            state = State.valueOf(stringState);
+        } catch (IllegalArgumentException e) {
+            throw new BookingUnsupportedTypeException("Unknown state: UNSUPPORTED_STATUS");
+        }
+
+        List<Booking> bookings = bookingRepository.findForOwner(owner.getId());
 
         if (bookings.isEmpty()) {
-            throw new BookingAccessException("Owner with id " + booker.getId() + " dont have any bookings");
+            throw new BookingAccessException("Owner with id " + owner.getId() + " dont have any bookings");
+        }
+
+        switch (state) {
+            case PAST:
+                bookings = bookingRepository.findForOwnerPast(owner.getId());
+                break;
+            case FUTURE:
+                bookings = bookingRepository.findForOwnerFuture(owner.getId());
+                break;
+            case WAITING:
+                bookings = bookingRepository.findForOwnerByStatus(owner.getId(), BookingStatus.WAITING.toString());
+                break;
+            case REJECTED:
+                bookings = bookingRepository.findForOwnerByStatus(owner.getId(), BookingStatus.REJECTED.toString());
+                break;
+            case CURRENT:
+                bookings = bookingRepository.findForOwnerCurrent(owner.getId());
+                break;
         }
 
         return BookingMapper.toDtos(bookings);

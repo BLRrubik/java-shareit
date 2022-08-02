@@ -56,9 +56,8 @@ public class BookingController {
 
     @GetMapping("/owner")
     public ResponseEntity<List<BookingDto>> getBookingsByOwner(@RequestParam(value = "state", required = false,
-            defaultValue = "ALL") State state,
-                                                               @RequestHeader("X-Sharer-User-Id")
-                                                               Long userPrincipal) {
+            defaultValue = "ALL") String state,
+                                                               @RequestHeader("X-Sharer-User-Id") Long userPrincipal) {
         return ResponseEntity.of(Optional.of(bookingService.getBookingsByOwner(userPrincipal, state)));
     }
 }

@@ -178,8 +178,8 @@ public class ItemServiceImpl implements ItemService {
             nextBooking = null;
             lastBooking = null;
         } else {
-            lastBooking = bookingRepository.findLastBooking(itemDto.getOwner().getId());
-            nextBooking = bookingRepository.findNextBooking(itemDto.getOwner().getId());
+            lastBooking = bookingRepository.findLastBooking(itemDto.getOwner().getId(), itemDto.getId());
+            nextBooking = bookingRepository.findNextBooking(itemDto.getOwner().getId(), itemDto.getId());
         }
 
 
