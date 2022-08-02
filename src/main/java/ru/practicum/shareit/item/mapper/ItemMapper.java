@@ -33,7 +33,7 @@ public class ItemMapper {
                         item.getOwner().getId(),
                         item.getOwner().getName()
                 ),
-                item.getRequest() != null ? new ItemDto.Request(item.getRequest().getId()) : null,
+                item.getRequest() != null ? item.getRequest().getId() : null,
                 comments
         );
     }

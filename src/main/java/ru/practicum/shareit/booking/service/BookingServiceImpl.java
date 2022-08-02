@@ -7,6 +7,7 @@ import ru.practicum.shareit.booking.State;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.exceptions.BookingAccessException;
 import ru.practicum.shareit.booking.exceptions.BookingNotFoundException;
+import ru.practicum.shareit.booking.exceptions.BookingUnsupportedTypeException;
 import ru.practicum.shareit.booking.exceptions.BookingValidateException;
 import ru.practicum.shareit.booking.mapper.BookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
@@ -116,8 +117,16 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingDto> getBookingsByUser(Long userPrincipal, State state) {
+    public List<BookingDto> getBookingsByUser(Long userPrincipal, String stringState) {
         User booker = userService.findById(userPrincipal);
+
+        State state;
+
+        try {
+            state = State.valueOf(stringState);
+        } catch (IllegalArgumentException e) {
+            throw new BookingUnsupportedTypeException("Unknown state: UNSUPPORTED_STATUS");
+        }
 
         switch (state) {
             case PAST:
@@ -132,8 +141,11 @@ public class BookingServiceImpl implements BookingService {
             case REJECTED:
                 return BookingMapper.toDtos(bookingRepository.findAllByBookerAndStatusIsOrderByStartDesc(booker,
                         BookingStatus.REJECTED));
+            case CURRENT:
+                return BookingMapper.toDtos(bookingRepository.getByCurrentStatus(booker.getId()));
             default:
                 return BookingMapper.toDtos(bookingRepository.findAllByBookerOrderByStartDesc(booker));
+
         }
     }
 

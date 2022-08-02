@@ -18,6 +18,8 @@ import ru.practicum.shareit.item.repository.CommentRepository;
 import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.item.request.ItemCreateRequest;
 import ru.practicum.shareit.item.request.ItemUpdateRequest;
+import ru.practicum.shareit.requests.model.ItemRequest;
+import ru.practicum.shareit.requests.service.ItemRequestService;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.UserService;
 
@@ -31,13 +33,15 @@ public class ItemServiceImpl implements ItemService {
     private final UserService userService;
     private final BookingRepository bookingRepository;
     private final CommentRepository commentRepository;
+    private final ItemRequestService itemRequestService;
 
     @Autowired
-    public ItemServiceImpl(UserService userService, ItemRepository itemRepository, BookingRepository bookingRepository, CommentRepository commentRepository) {
+    public ItemServiceImpl(UserService userService, ItemRepository itemRepository, BookingRepository bookingRepository, CommentRepository commentRepository, ItemRequestService itemRequestService) {
         this.userService = userService;
         this.itemRepository = itemRepository;
         this.bookingRepository = bookingRepository;
         this.commentRepository = commentRepository;
+        this.itemRequestService = itemRequestService;
     }
 
     @Override
@@ -82,7 +86,11 @@ public class ItemServiceImpl implements ItemService {
     public ItemDto addItem(ItemCreateRequest request, Long userPrincipal) {
         User user = userService.findById(userPrincipal);
 
-        //todo дальше здесь будет проверка на существование реквеста
+        ItemRequest itemRequest = null;
+
+        if (request.getRequestId() != null) {
+             itemRequest = itemRequestService.findById(request.getRequestId());
+        }
 
         Item item = new Item();
 
@@ -90,6 +98,7 @@ public class ItemServiceImpl implements ItemService {
         item.setDescription(request.getDescription());
         item.setAvailable(request.getAvailable());
         item.setOwner(user);
+        item.setRequest(itemRequest);
 
         return ItemMapper.toDto(itemRepository.save(item));
     }
@@ -104,9 +113,16 @@ public class ItemServiceImpl implements ItemService {
             throw new ItemOwnerException("user with id: " + user.getId() + " is not owner of item with id: " + itemId);
         }
 
+        ItemRequest itemRequest = null;
+
+        if (request.getRequestId() != null) {
+            itemRequest = itemRequestService.findById(request.getRequestId());
+        }
+
         item.setName(request.getName() != null ? request.getName() : item.getName());
         item.setDescription(request.getDescription() != null ? request.getDescription() : item.getDescription());
         item.setAvailable(request.getAvailable() != null ? request.getAvailable() : item.isAvailable());
+        item.setRequest(itemRequest != null ? itemRequest : item.getRequest());
 
         itemRepository.save(item);
 

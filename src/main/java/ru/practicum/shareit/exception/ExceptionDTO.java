@@ -12,6 +12,6 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ExceptionDTO {
-    private String message;
+    private String error;
     private LocalDateTime dateTime;
 }
