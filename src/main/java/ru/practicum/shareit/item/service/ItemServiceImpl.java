@@ -89,7 +89,7 @@ public class ItemServiceImpl implements ItemService {
         ItemRequest itemRequest = null;
 
         if (request.getRequestId() != null) {
-             itemRequest = itemRequestService.findById(request.getRequestId());
+            itemRequest = itemRequestService.findById(request.getRequestId());
         }
 
         Item item = new Item();

@@ -1,7 +1,6 @@
 package ru.practicum.shareit.requests.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.requests.dto.ItemRequestDto;
@@ -26,21 +25,21 @@ public class ItemRequestController {
 
     @PostMapping
     public ResponseEntity<ItemRequestDto> createRequest(@RequestHeader("X-Sharer-User-Id")
-                                                            Long userPrincipal,
-                                                        @RequestBody @Valid ItemRequestCreate requestCreate){
+                                                        Long userPrincipal,
+                                                        @RequestBody @Valid ItemRequestCreate requestCreate) {
 
         return ResponseEntity.of(Optional.of(itemRequestService.createRequest(requestCreate, userPrincipal)));
     }
 
     @GetMapping
     public ResponseEntity<List<ItemRequestDto>> getByUser(@RequestHeader("X-Sharer-User-Id")
-                                                              Long userPrincipal) {
+                                                          Long userPrincipal) {
         return ResponseEntity.of(Optional.of(itemRequestService.getRequestsByUser(userPrincipal)));
     }
 
     @GetMapping("/{requestId}")
     public ResponseEntity<ItemRequestDto> getById(@RequestHeader("X-Sharer-User-Id")
-                                                      Long userPrincipal,
+                                                  Long userPrincipal,
                                                   @PathVariable("requestId") Long requestId) {
         return ResponseEntity.of(Optional.of(itemRequestService.getById(requestId, userPrincipal)));
     }

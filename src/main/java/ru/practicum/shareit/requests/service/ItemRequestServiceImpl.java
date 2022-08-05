@@ -4,16 +4,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.server.ResponseStatusException;
-import ru.practicum.shareit.requests.exceptions.ItemRequestNotFoundException;
-import ru.practicum.shareit.requests.repositiry.ItemRequestRepository;
 import ru.practicum.shareit.requests.dto.ItemRequestDto;
+import ru.practicum.shareit.requests.exceptions.ItemRequestNotFoundException;
 import ru.practicum.shareit.requests.mapper.ItemRequestMapper;
 import ru.practicum.shareit.requests.model.ItemRequest;
+import ru.practicum.shareit.requests.repositiry.ItemRequestRepository;
 import ru.practicum.shareit.requests.request.ItemRequestCreate;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.UserService;
@@ -22,7 +18,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
-public class ItemRequestServiceImpl implements ItemRequestService{
+public class ItemRequestServiceImpl implements ItemRequestService {
     private final ItemRequestRepository itemRequestRepository;
     private final UserService userService;
 
@@ -57,10 +53,10 @@ public class ItemRequestServiceImpl implements ItemRequestService{
         return ItemRequestMapper.convertPageToDto(itemRequestRepository.findAll(
                 user.getId(),
                 PageRequest.of(
-                from,
-                size,
-                Sort.Direction.ASC, "created_at"
-        )));
+                        from,
+                        size,
+                        Sort.Direction.ASC, "created_at"
+                )));
     }
 
     @Override

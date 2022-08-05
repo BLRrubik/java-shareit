@@ -37,10 +37,8 @@ public class ItemRequestMapper {
                 .collect(Collectors.toList());
     }
 
-    public static Page<ItemRequestDto> convertPageToDto(Page<ItemRequest> page)
-    {
-        if (page.isEmpty())
-        {
+    public static Page<ItemRequestDto> convertPageToDto(Page<ItemRequest> page) {
+        if (page.isEmpty()) {
             return Page.empty();
         }
 
