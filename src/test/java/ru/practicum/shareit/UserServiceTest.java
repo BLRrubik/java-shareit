@@ -7,13 +7,20 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import ru.practicum.shareit.user.controller.UserController;
 import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.user.excepton.UserAlreadyExistsException;
+import ru.practicum.shareit.user.excepton.UserNotFoundException;
 import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.model.User;
+import ru.practicum.shareit.user.request.UserUpdateRequest;
 import ru.practicum.shareit.user.service.UserService;
 
 import java.nio.charset.StandardCharsets;
@@ -30,6 +37,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 
 @ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public class UserServiceTest {
     @Mock
     private UserService userService;
@@ -59,8 +67,6 @@ public class UserServiceTest {
 
     @Test
     void saveNewUser() throws Exception {
-        when(userService.createUser(any()))
-                .thenReturn(user);
 
         userDto = UserMapper.toDto(user);
 
@@ -77,7 +83,7 @@ public class UserServiceTest {
 
     @Test
     void updateUser() throws Exception {
-        when(userService.updateUser(any(), any()))
+        when(userService.updateUser(any(UserUpdateRequest.class), anyLong()))
                 .thenReturn(user);
 
         userDto = UserMapper.toDto(user);
@@ -127,5 +133,17 @@ public class UserServiceTest {
                 .andExpect(jsonPath("$.email", is(userDto.getEmail())));
     }
 
+    @Test
+    void updateUserWithException() throws Exception {
+        when(userService.updateUser(any(UserUpdateRequest.class), anyLong()))
+                .thenThrow(UserAlreadyExistsException.class);
 
+        mvc.perform(patch("/users/1")
+                        .content(mapper.writeValueAsString(userDto))
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(status().is(400));
+    }
 }
