@@ -15,10 +15,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import ru.practicum.shareit.item.controller.ItemController;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.request.ItemCreateRequest;
 import ru.practicum.shareit.item.service.ItemService;
-import ru.practicum.shareit.user.model.User;
-import ru.practicum.shareit.user.service.UserService;
 
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
@@ -69,7 +66,7 @@ public class ItemServiceTest {
     }
 
     @Test
-    void createItem() throws Exception{
+    void createItem() throws Exception {
 
         when(itemService.addItem(any(), anyLong()))
                 .thenReturn(itemDto);
@@ -84,11 +81,11 @@ public class ItemServiceTest {
                 .andExpect(jsonPath("$.id", is(itemDto.getId()), Long.class))
                 .andExpect(jsonPath("$.name", is(itemDto.getName())))
                 .andExpect(jsonPath("$.description", is(itemDto.getDescription())))
-                .andExpect(jsonPath("$.comments",hasSize(0)));
+                .andExpect(jsonPath("$.comments", hasSize(0)));
     }
 
     @Test
-    void updateItem() throws Exception{
+    void updateItem() throws Exception {
         when(itemService.updateItem(any(), anyLong(), anyLong()))
                 .thenReturn(itemDto);
 
@@ -102,11 +99,11 @@ public class ItemServiceTest {
                 .andExpect(jsonPath("$.id", is(itemDto.getId()), Long.class))
                 .andExpect(jsonPath("$.name", is(itemDto.getName())))
                 .andExpect(jsonPath("$.description", is(itemDto.getDescription())))
-                .andExpect(jsonPath("$.comments",hasSize(0)));
+                .andExpect(jsonPath("$.comments", hasSize(0)));
     }
 
     @Test
-    void getItemById() throws  Exception {
+    void getItemById() throws Exception {
         when(itemService.findById(anyLong(), anyLong()))
                 .thenReturn(itemDto);
 
@@ -120,11 +117,11 @@ public class ItemServiceTest {
                 .andExpect(jsonPath("$.id", is(itemDto.getId()), Long.class))
                 .andExpect(jsonPath("$.name", is(itemDto.getName())))
                 .andExpect(jsonPath("$.description", is(itemDto.getDescription())))
-                .andExpect(jsonPath("$.comments",hasSize(0)));
+                .andExpect(jsonPath("$.comments", hasSize(0)));
     }
 
     @Test
-    void getUsersItems() throws  Exception {
+    void getUsersItems() throws Exception {
         List<ItemDto> items = List.of(itemDto);
 
         when(itemService.getItemOfUser(anyLong()))
@@ -137,7 +134,7 @@ public class ItemServiceTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$",hasSize(1)))
+                .andExpect(jsonPath("$", hasSize(1)))
                 .andExpect(jsonPath("$[0].name", is(itemDto.getName())));
     }
 
@@ -156,7 +153,7 @@ public class ItemServiceTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$",hasSize(1)))
+                .andExpect(jsonPath("$", hasSize(1)))
                 .andExpect(jsonPath("$[0].name", is(itemDto.getName())));
     }
 
@@ -174,8 +171,8 @@ public class ItemServiceTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id",is(1)))
-                .andExpect(jsonPath("$.text",is(commentDto.getText())))
-                .andExpect(jsonPath("$.authorName",is(commentDto.getAuthorName())));
+                .andExpect(jsonPath("$.id", is(1)))
+                .andExpect(jsonPath("$.text", is(commentDto.getText())))
+                .andExpect(jsonPath("$.authorName", is(commentDto.getAuthorName())));
     }
 }
