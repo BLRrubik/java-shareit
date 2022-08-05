@@ -13,6 +13,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import ru.practicum.shareit.item.controller.ItemController;
+import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.request.ItemCreateRequest;
 import ru.practicum.shareit.item.service.ItemService;
@@ -20,14 +21,15 @@ import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.UserService;
 
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -45,11 +47,6 @@ public class ItemServiceTest {
     private final ObjectMapper mapper = new ObjectMapper();
 
     private ItemDto itemDto;
-
-    @Mock
-    private UserService userService;
-
-    private User user;
 
     @BeforeEach
     void setUp() {
@@ -69,23 +66,16 @@ public class ItemServiceTest {
                 1L,
                 new ArrayList<>()
         );
-
-        user = new User(
-                1L,
-                "username",
-                "email"
-        );
     }
 
     @Test
     void createItem() throws Exception{
-        when(userService.createUser(any()))
-                .thenReturn(user);
 
         when(itemService.addItem(any(), anyLong()))
                 .thenReturn(itemDto);
 
         mvc.perform(post("/items")
+                        .header("X-Sharer-User-Id", 1)
                         .content(mapper.writeValueAsString(itemDto))
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -93,7 +83,99 @@ public class ItemServiceTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(itemDto.getId()), Long.class))
                 .andExpect(jsonPath("$.name", is(itemDto.getName())))
-                .andExpect(jsonPath("$.email", is(itemDto.getDescription())))
+                .andExpect(jsonPath("$.description", is(itemDto.getDescription())))
                 .andExpect(jsonPath("$.comments",hasSize(0)));
+    }
+
+    @Test
+    void updateItem() throws Exception{
+        when(itemService.updateItem(any(), anyLong(), anyLong()))
+                .thenReturn(itemDto);
+
+        mvc.perform(patch("/items/1")
+                        .header("X-Sharer-User-Id", 1)
+                        .content(mapper.writeValueAsString(itemDto))
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", is(itemDto.getId()), Long.class))
+                .andExpect(jsonPath("$.name", is(itemDto.getName())))
+                .andExpect(jsonPath("$.description", is(itemDto.getDescription())))
+                .andExpect(jsonPath("$.comments",hasSize(0)));
+    }
+
+    @Test
+    void getItemById() throws  Exception {
+        when(itemService.findById(anyLong(), anyLong()))
+                .thenReturn(itemDto);
+
+        mvc.perform(get("/items/1")
+                        .header("X-Sharer-User-Id", 1)
+                        .content(mapper.writeValueAsString(itemDto))
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", is(itemDto.getId()), Long.class))
+                .andExpect(jsonPath("$.name", is(itemDto.getName())))
+                .andExpect(jsonPath("$.description", is(itemDto.getDescription())))
+                .andExpect(jsonPath("$.comments",hasSize(0)));
+    }
+
+    @Test
+    void getUsersItems() throws  Exception {
+        List<ItemDto> items = List.of(itemDto);
+
+        when(itemService.getItemOfUser(anyLong()))
+                .thenReturn(items);
+
+        mvc.perform(get("/items")
+                        .header("X-Sharer-User-Id", 1)
+                        .content(mapper.writeValueAsString(itemDto))
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$",hasSize(1)))
+                .andExpect(jsonPath("$[0].name", is(itemDto.getName())));
+    }
+
+    @Test
+    void searchItems() throws Exception {
+        List<ItemDto> items = List.of(itemDto);
+
+        when(itemService.search(anyString(), anyLong()))
+                .thenReturn(items);
+
+        mvc.perform(get("/items/search")
+                        .header("X-Sharer-User-Id", 1)
+                        .param("text", "name")
+                        .content(mapper.writeValueAsString(itemDto))
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$",hasSize(1)))
+                .andExpect(jsonPath("$[0].name", is(itemDto.getName())));
+    }
+
+    @Test
+    void addComment() throws Exception {
+        CommentDto commentDto = new CommentDto(1L, "", "", LocalDateTime.now());
+
+        when(itemService.addComment(anyLong(), any(), anyLong()))
+                .thenReturn(commentDto);
+
+        mvc.perform(post("/items/1/comment")
+                        .header("X-Sharer-User-Id", 1)
+                        .content(mapper.writeValueAsString(itemDto))
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id",is(1)))
+                .andExpect(jsonPath("$.text",is(commentDto.getText())))
+                .andExpect(jsonPath("$.authorName",is(commentDto.getAuthorName())));
     }
 }

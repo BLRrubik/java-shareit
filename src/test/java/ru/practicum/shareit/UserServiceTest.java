@@ -68,6 +68,9 @@ public class UserServiceTest {
     @Test
     void saveNewUser() throws Exception {
 
+        when(userService.createUser(any()))
+                .thenReturn(user);
+
         userDto = UserMapper.toDto(user);
 
         mvc.perform(post("/users")

@@ -32,7 +32,7 @@ public class BookingController {
 
     @PatchMapping("/{bookingId}")
     public ResponseEntity<BookingDto> approveBooking(@PathVariable("bookingId") Long bookingId,
-                                                     @RequestParam(value = "approved", required = true) boolean approve,
+                                                     @RequestParam(value = "approved") boolean approve,
                                                      @RequestHeader("X-Sharer-User-Id") Long userPrincipal) {
 
         return ResponseEntity.of(Optional.of(bookingService.approveBooking(bookingId, approve, userPrincipal)));
