@@ -7,6 +7,7 @@ import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.requests.BookingCreateRequest;
 import ru.practicum.shareit.booking.service.BookingService;
 
+import javax.validation.constraints.Positive;
 import java.util.List;
 import java.util.Optional;
 
@@ -47,16 +48,26 @@ public class BookingController {
 
     @GetMapping()
     public ResponseEntity<List<BookingDto>> getBookingsByCurrentUser(@RequestParam(value = "state", required = false,
-            defaultValue = "ALL") String state,
+                                                                        defaultValue = "ALL") String state,
+                                                                     @RequestParam(value = "from", required = false)
+                                                                     @Positive Integer from,
+                                                                     @RequestParam(value = "size", required = false)
+                                                                         @Positive Integer size,
                                                                      @RequestHeader("X-Sharer-User-Id")
                                                                      Long userPrincipal) {
-        return ResponseEntity.of(Optional.of(bookingService.getBookingsByUser(userPrincipal, state)));
+        return ResponseEntity.of(Optional.of(
+                bookingService.getBookingsByUser(userPrincipal, state, from, size).getContent()));
     }
 
     @GetMapping("/owner")
     public ResponseEntity<List<BookingDto>> getBookingsByOwner(@RequestParam(value = "state", required = false,
-            defaultValue = "ALL") String state,
+                                                                defaultValue = "ALL") String state,
+                                                               @RequestParam(value = "from", required = false)
+                                                               @Positive Integer from,
+                                                               @RequestParam(value = "size", required = false)
+                                                                   @Positive Integer size,
                                                                @RequestHeader("X-Sharer-User-Id") Long userPrincipal) {
-        return ResponseEntity.of(Optional.of(bookingService.getBookingsByOwner(userPrincipal, state)));
+        return ResponseEntity.of(Optional.of(
+                bookingService.getBookingsByOwner(userPrincipal, state, from, size).getContent()));
     }
 }

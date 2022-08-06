@@ -10,6 +10,7 @@ import ru.practicum.shareit.item.request.ItemUpdateRequest;
 import ru.practicum.shareit.item.service.ItemService;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Positive;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,8 +28,12 @@ public class ItemController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ItemDto>> getItemsOfUser(@RequestHeader("X-Sharer-User-Id") Long userPrincipal) {
-        return ResponseEntity.of(Optional.of(itemService.getItemOfUser(userPrincipal)));
+    public ResponseEntity<List<ItemDto>> getItemsOfUser(@RequestHeader("X-Sharer-User-Id") Long userPrincipal,
+                                                        @RequestParam(value = "from", required = false)
+                                                        @Positive Integer from,
+                                                        @RequestParam(value = "size", required = false)
+                                                            @Positive Integer size) {
+        return ResponseEntity.of(Optional.of(itemService.getItemOfUser(from, size,userPrincipal).getContent()));
     }
 
     @GetMapping("/{itemId}")
@@ -52,8 +57,12 @@ public class ItemController {
 
     @GetMapping("/search")
     public ResponseEntity<List<ItemDto>> searchItems(@RequestParam(value = "text", required = false) String text,
-                                                     @RequestHeader("X-Sharer-User-Id") Long userPrincipal) {
-        return ResponseEntity.of(Optional.of(itemService.search(text, userPrincipal)));
+                                                     @RequestHeader("X-Sharer-User-Id") Long userPrincipal,
+                                                     @RequestParam(value = "from", required = false)
+                                                         @Positive Integer from,
+                                                     @RequestParam(value = "size", required = false)
+                                                         @Positive Integer size) {
+        return ResponseEntity.of(Optional.of(itemService.search(text, from, size, userPrincipal).getContent()));
     }
 
     @PostMapping("/{itemId}/comment")

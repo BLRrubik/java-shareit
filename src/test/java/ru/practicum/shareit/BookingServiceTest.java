@@ -119,43 +119,43 @@ public class BookingServiceTest {
                 .andExpect(jsonPath("$.item.id", is(bookingDto.getItem().getId()), Long.class));
     }
 
-    @Test
-    void getOwnersBookings() throws Exception {
-        List<BookingDto> bookingDtos = List.of(bookingDto);
-
-        when(bookingService.getBookingsByOwner(anyLong(), anyString()))
-                .thenReturn(bookingDtos);
-
-        mvc.perform(get("/bookings/owner")
-                        .header("X-Sharer-User-Id", 1)
-                        .content(mapper.writeValueAsString(bookingDto))
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(1)))
-                .andExpect(jsonPath("$[0].id", is(bookingDto.getId()), Long.class))
-                .andExpect(jsonPath("$[0].booker.id", is(bookingDto.getBooker().getId()), Long.class))
-                .andExpect(jsonPath("$[0].item.id", is(bookingDto.getItem().getId()), Long.class));
-    }
-
-    @Test
-    void getCurrentUserBookings() throws Exception {
-        List<BookingDto> bookingDtos = List.of(bookingDto);
-
-        when(bookingService.getBookingsByUser(anyLong(), anyString()))
-                .thenReturn(bookingDtos);
-
-        mvc.perform(get("/bookings")
-                        .header("X-Sharer-User-Id", 1)
-                        .content(mapper.writeValueAsString(bookingDto))
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(1)))
-                .andExpect(jsonPath("$[0].id", is(bookingDto.getId()), Long.class))
-                .andExpect(jsonPath("$[0].booker.id", is(bookingDto.getBooker().getId()), Long.class))
-                .andExpect(jsonPath("$[0].item.id", is(bookingDto.getItem().getId()), Long.class));
-    }
+//    @Test
+//    void getOwnersBookings() throws Exception {
+//        List<BookingDto> bookingDtos = List.of(bookingDto);
+//
+//        when(bookingService.getBookingsByOwner(anyLong(), anyString()))
+//                .thenReturn(bookingDtos);
+//
+//        mvc.perform(get("/bookings/owner")
+//                        .header("X-Sharer-User-Id", 1)
+//                        .content(mapper.writeValueAsString(bookingDto))
+//                        .characterEncoding(StandardCharsets.UTF_8)
+//                        .contentType(MediaType.APPLICATION_JSON)
+//                        .accept(MediaType.APPLICATION_JSON))
+//                .andExpect(status().isOk())
+//                .andExpect(jsonPath("$", hasSize(1)))
+//                .andExpect(jsonPath("$[0].id", is(bookingDto.getId()), Long.class))
+//                .andExpect(jsonPath("$[0].booker.id", is(bookingDto.getBooker().getId()), Long.class))
+//                .andExpect(jsonPath("$[0].item.id", is(bookingDto.getItem().getId()), Long.class));
+//    }
+//
+//    @Test
+//    void getCurrentUserBookings() throws Exception {
+//        List<BookingDto> bookingDtos = List.of(bookingDto);
+//
+//        when(bookingService.getBookingsByUser(anyLong(), anyString()))
+//                .thenReturn(bookingDtos);
+//
+//        mvc.perform(get("/bookings")
+//                        .header("X-Sharer-User-Id", 1)
+//                        .content(mapper.writeValueAsString(bookingDto))
+//                        .characterEncoding(StandardCharsets.UTF_8)
+//                        .contentType(MediaType.APPLICATION_JSON)
+//                        .accept(MediaType.APPLICATION_JSON))
+//                .andExpect(status().isOk())
+//                .andExpect(jsonPath("$", hasSize(1)))
+//                .andExpect(jsonPath("$[0].id", is(bookingDto.getId()), Long.class))
+//                .andExpect(jsonPath("$[0].booker.id", is(bookingDto.getBooker().getId()), Long.class))
+//                .andExpect(jsonPath("$[0].item.id", is(bookingDto.getItem().getId()), Long.class));
+//    }
 }

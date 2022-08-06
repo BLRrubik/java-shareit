@@ -1,6 +1,10 @@
 package ru.practicum.shareit.item.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.repository.BookingRepository;
@@ -18,6 +22,7 @@ import ru.practicum.shareit.item.repository.CommentRepository;
 import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.item.request.ItemCreateRequest;
 import ru.practicum.shareit.item.request.ItemUpdateRequest;
+import ru.practicum.shareit.requests.mapper.ItemRequestMapper;
 import ru.practicum.shareit.requests.model.ItemRequest;
 import ru.practicum.shareit.requests.service.ItemRequestService;
 import ru.practicum.shareit.user.model.User;
@@ -72,14 +77,24 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemDto> getItemOfUser(Long userPrincipal) {
+    public Page<ItemDto> getItemOfUser(Integer from, Integer size, Long userPrincipal) {
         User user = userService.findById(userPrincipal);
 
-        List<Item> items = itemRepository.findAllByOwner(user);
+        Page<Item> page = itemRepository.findAllByOwner(
+                user,
+                PageRequest.of(
+                        from,
+                        size,
+                        Sort.Direction.ASC, "created_at"
+                ));
+
+        List<Item> items = page.getContent();
 
         List<ItemDto> itemDtos = ItemMapper.toDtos(items);
 
-        return setLastAndNextBookingForList(itemDtos, userPrincipal);
+        setLastAndNextBookingForList(itemDtos, userPrincipal);
+
+        return new PageImpl<>(ItemMapper.toDtos(page.getContent()), page.getPageable(), page.getTotalElements());
     }
 
     @Override
@@ -132,16 +147,26 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemDto> search(String text, Long userPrincipal) {
+    public Page<ItemDto> search(String text, Integer from, Integer size, Long userPrincipal) {
         if (text.isEmpty()) {
-            return List.of();
+            return Page.empty();
         }
 
-        List<ItemDto> itemDtos = ItemMapper.toDtos(
-                itemRepository.findAllByNameOrDescriptionContainingIgnoreCaseAndAvailableTrue(text, text)
-        );
+        Page<Item> page =
+                itemRepository.findAllByNameOrDescriptionContainingIgnoreCaseAndAvailableTrue(text,
+                        text,
+                        PageRequest.of(
+                                from,
+                                size,
+                                Sort.Direction.ASC,
+                                "id")
+                );
 
-        return setLastAndNextBookingForList(itemDtos, userPrincipal);
+        List<ItemDto> itemDtos = ItemMapper.toDtos(page.getContent());
+
+        setLastAndNextBookingForList(itemDtos, userPrincipal);
+
+        return new PageImpl<>(ItemMapper.toDtos(page.getContent()), page.getPageable(), page.getTotalElements());
     }
 
     @Override
