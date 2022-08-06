@@ -85,7 +85,7 @@ public class ItemServiceImpl implements ItemService {
                 PageRequest.of(
                         from,
                         size,
-                        Sort.Direction.ASC, "created_at"
+                        Sort.Direction.ASC, "id"
                 ));
 
         List<Item> items = page.getContent();
