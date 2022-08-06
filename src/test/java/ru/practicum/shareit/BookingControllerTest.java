@@ -32,7 +32,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public class BookingServiceTest {
+public class BookingControllerTest {
     @Mock
     private BookingService bookingService;
 
@@ -147,7 +147,7 @@ public class BookingServiceTest {
     void getCurrentUserBookings() throws Exception {
         Page<BookingDto> page = new PageImpl<>(List.of(bookingDto));
 
-        when(bookingService.getBookingsByOwner(anyLong(), anyString(), anyInt(), anyInt()))
+        when(bookingService.getBookingsByUser(anyLong(), anyString(), anyInt(), anyInt()))
                 .thenReturn(page);
 
         mvc.perform(get("/bookings")

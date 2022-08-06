@@ -1,4 +1,4 @@
-package ru.practicum.shareit;
+package ru.practicum.shareit.itemRequest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,7 +33,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public class ItemRequestServiceTest {
+public class ItemRequestControllerTest {
     @Mock
     private ItemRequestService itemRequestService;
 
