@@ -18,19 +18,19 @@ public class ItemDto {
     private String description;
     private boolean available;
     private User owner;
-    private Request request;
+    private Long requestId;
     private Booking lastBooking;
     private Booking nextBooking;
     private List<Comment> comments;
 
-    public ItemDto(Long id, String name, String description, boolean available, User owner, Request request,
+    public ItemDto(Long id, String name, String description, boolean available, User owner, Long requestId,
                    List<Comment> comments) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.available = available;
         this.owner = owner;
-        this.request = request;
+        this.requestId = requestId;
         this.comments = comments;
     }
 
@@ -41,14 +41,6 @@ public class ItemDto {
     public static class User {
         private Long id;
         private String name;
-    }
-
-    @Getter
-    @Setter
-    @AllArgsConstructor
-    @NoArgsConstructor
-    public static class Request {
-        private Long id;
     }
 
     @Getter

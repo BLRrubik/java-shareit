@@ -1,6 +1,6 @@
 package ru.practicum.shareit.booking.service;
 
-import ru.practicum.shareit.booking.State;
+import org.springframework.data.domain.Page;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.requests.BookingCreateRequest;
 
@@ -13,7 +13,7 @@ public interface BookingService {
 
     BookingDto getByIdForBookerOrOwner(Long bookingId, Long userPrincipal);
 
-    List<BookingDto> getBookingsByUser(Long userPrincipal, State state);
+    Page<BookingDto> getBookingsByUser(Long userPrincipal, String state, Integer from, Integer size);
 
-    List<BookingDto> getBookingsByOwner(Long userPrincipal, State state);
+    Page<BookingDto> getBookingsByOwner(Long userPrincipal, String state, Integer from, Integer size);
 }

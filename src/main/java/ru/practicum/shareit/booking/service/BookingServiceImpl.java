@@ -1,12 +1,16 @@
 package ru.practicum.shareit.booking.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.BookingStatus;
 import ru.practicum.shareit.booking.State;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.exceptions.BookingAccessException;
 import ru.practicum.shareit.booking.exceptions.BookingNotFoundException;
+import ru.practicum.shareit.booking.exceptions.BookingUnsupportedTypeException;
 import ru.practicum.shareit.booking.exceptions.BookingValidateException;
 import ru.practicum.shareit.booking.mapper.BookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
@@ -64,10 +68,6 @@ public class BookingServiceImpl implements BookingService {
         booking.setItem(item);
         booking.setStatus(BookingStatus.WAITING);
 
-        Long ownerId = booking.getItem().getOwner().getId();
-
-        Booking lastBooking = bookingRepository.findLastBooking(ownerId);
-
         return BookingMapper.toDto(bookingRepository.save(booking));
     }
 
@@ -116,38 +116,144 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingDto> getBookingsByUser(Long userPrincipal, State state) {
+    public Page<BookingDto> getBookingsByUser(Long userPrincipal, String stringState, Integer from, Integer size) {
         User booker = userService.findById(userPrincipal);
+
+        State state;
+
+        try {
+            state = State.valueOf(stringState);
+        } catch (IllegalArgumentException e) {
+            throw new BookingUnsupportedTypeException("Unknown state: UNSUPPORTED_STATUS");
+        }
 
         switch (state) {
             case PAST:
-                return BookingMapper.toDtos(bookingRepository.findAllByBookerAndEndIsBeforeOrderByStartDesc(booker,
-                        LocalDateTime.now()));
+                return BookingMapper.convertPageToDto(bookingRepository.findAllByBookerAndEndIsBeforeOrderByStartDesc(
+                        booker,
+                        LocalDateTime.now(),
+                        PageRequest.of(
+                                from,
+                                size,
+                                Sort.Direction.ASC,
+                                "id"
+                        )));
             case FUTURE:
-                return BookingMapper.toDtos(bookingRepository.findAllByBookerAndStartIsAfterOrderByStartDesc(booker,
-                        LocalDateTime.now()));
+                return BookingMapper.convertPageToDto(
+                        bookingRepository.findAllByBookerAndStartIsAfterOrderByStartDesc(booker,
+                        LocalDateTime.now(), PageRequest.of(
+                                        from,
+                                        size,
+                                        Sort.Direction.ASC,
+                                        "id"
+                                )));
             case WAITING:
-                return BookingMapper.toDtos(bookingRepository.findAllByBookerAndStatusIsOrderByStartDesc(booker,
-                        BookingStatus.WAITING));
+                return BookingMapper.convertPageToDto(bookingRepository.findAllByBookerAndStatusIsOrderByStartDesc(booker,
+                        BookingStatus.WAITING, PageRequest.of(
+                                from,
+                                size,
+                                Sort.Direction.ASC,
+                                "id"
+                        )));
             case REJECTED:
-                return BookingMapper.toDtos(bookingRepository.findAllByBookerAndStatusIsOrderByStartDesc(booker,
-                        BookingStatus.REJECTED));
+                return BookingMapper.convertPageToDto(bookingRepository.findAllByBookerAndStatusIsOrderByStartDesc(
+                        booker,
+                        BookingStatus.REJECTED,
+                        PageRequest.of(
+                                from,
+                                size,
+                                Sort.Direction.ASC,
+                                "id"
+                        )));
+            case CURRENT:
+                return BookingMapper.convertPageToDto(bookingRepository.getByCurrentStatus(booker.getId(),
+                        PageRequest.of(
+                        from,
+                        size,
+                        Sort.Direction.ASC,
+                        "id"
+                )));
             default:
-                return BookingMapper.toDtos(bookingRepository.findAllByBookerOrderByStartDesc(booker));
+                return BookingMapper.convertPageToDto(bookingRepository.findAllByBookerOrderByStartDesc(booker,
+                        PageRequest.of(
+                        from,
+                        size,
+                        Sort.Direction.ASC,
+                        "id"
+                )));
+
         }
     }
 
     @Override
-    public List<BookingDto> getBookingsByOwner(Long userPrincipal, State state) {
-        User booker = userService.findById(userPrincipal);
+    public Page<BookingDto> getBookingsByOwner(Long userPrincipal, String stringState, Integer from, Integer size) {
+        User owner = userService.findById(userPrincipal);
 
-        List<Booking> bookings = bookingRepository.findForOwner(booker.getId());
+        State state;
 
-        if (bookings.isEmpty()) {
-            throw new BookingAccessException("Owner with id " + booker.getId() + " dont have any bookings");
+        try {
+            state = State.valueOf(stringState);
+        } catch (IllegalArgumentException e) {
+            throw new BookingUnsupportedTypeException("Unknown state: UNSUPPORTED_STATUS");
         }
 
-        return BookingMapper.toDtos(bookings);
+        Page<Booking> bookings = bookingRepository.findForOwner(owner.getId(), PageRequest.of(
+                from,
+                size,
+                Sort.Direction.ASC,
+                "id"
+        ));
+
+        if (bookings.isEmpty()) {
+            throw new BookingAccessException("Owner with id " + owner.getId() + " dont have any bookings");
+        }
+
+        switch (state) {
+            case PAST:
+                bookings = bookingRepository.findForOwnerPast(owner.getId(), PageRequest.of(
+                        from,
+                        size,
+                        Sort.Direction.ASC,
+                        "id"
+                ));
+                break;
+            case FUTURE:
+                bookings = bookingRepository.findForOwnerFuture(owner.getId(), PageRequest.of(
+                        from,
+                        size,
+                        Sort.Direction.ASC,
+                        "id"
+                ));
+                break;
+            case WAITING:
+                bookings = bookingRepository.findForOwnerByStatus(owner.getId(), BookingStatus.WAITING.toString(),
+                        PageRequest.of(
+                        from,
+                        size,
+                        Sort.Direction.ASC,
+                        "id"
+                ));
+                break;
+            case REJECTED:
+                bookings = bookingRepository.findForOwnerByStatus(owner.getId(), BookingStatus.REJECTED.toString(),
+                        PageRequest.of(
+                        from,
+                        size,
+                        Sort.Direction.ASC,
+                        "id"
+                ));
+                break;
+            case CURRENT:
+                bookings = bookingRepository.findForOwnerCurrent(owner.getId(), PageRequest.of(
+                        from,
+                        size,
+                        Sort.Direction.ASC,
+                        "id"
+                ));
+                break;
+        }
+
+        return BookingMapper.convertPageToDto(bookings);
     }
 
 }

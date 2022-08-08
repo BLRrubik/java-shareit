@@ -1,5 +1,7 @@
 package ru.practicum.shareit.item.mapper;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
@@ -33,7 +35,7 @@ public class ItemMapper {
                         item.getOwner().getId(),
                         item.getOwner().getName()
                 ),
-                item.getRequest() != null ? new ItemDto.Request(item.getRequest().getId()) : null,
+                item.getRequest() != null ? item.getRequest().getId() : null,
                 comments
         );
     }
@@ -42,5 +44,13 @@ public class ItemMapper {
         return items.stream()
                 .map(ItemMapper::toDto)
                 .collect(Collectors.toList());
+    }
+
+    public static Page<ItemDto> convertPageToDto(Page<Item> page) {
+        if (page.isEmpty()) {
+            return Page.empty();
+        }
+
+        return new PageImpl<>(toDtos(page.getContent()), page.getPageable(), page.getTotalElements());
     }
 }
