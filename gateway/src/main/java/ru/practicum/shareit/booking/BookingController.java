@@ -25,8 +25,8 @@ public class BookingController {
 	@GetMapping
 	public Object getBookings(@RequestHeader("X-Sharer-User-Id") @Positive Long userId,
 							  @RequestParam(name = "state", defaultValue = "all") String stateParam,
-							  @RequestParam(name = "from", required = false) Integer from,
-							  @RequestParam(name = "size", required = false) Integer size) {
+							  @RequestParam(name = "from", required = false) @PositiveOrZero Integer from,
+							  @RequestParam(name = "size", required = false) @Positive Integer size) {
 		BookingState state = BookingState
 				.from(stateParam)
 				.orElseThrow(() -> new IllegalArgumentException("Unknown state: " + stateParam));
@@ -51,8 +51,8 @@ public class BookingController {
 	@GetMapping("/owner")
 	public Object getBookingsByOwner(@RequestParam(value = "state", required = false, defaultValue = "ALL")
 										 String state,
-									 @RequestParam(value = "from", required = false) Integer from,
-									 @RequestParam(value = "size", required = false) Integer size,
+									 @RequestParam(value = "from", required = false) @PositiveOrZero Integer from,
+									 @RequestParam(value = "size", required = false) @Positive Integer size,
 									 @RequestHeader("X-Sharer-User-Id") @Positive Long userPrincipal) {
 		log.info("Get bookings by owner userId={}", userPrincipal);
 

@@ -1,4 +1,4 @@
-package ru.practicum.shareit.item.request;
+package ru.practicum.shareit.requests.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -7,17 +7,14 @@ import lombok.Setter;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-import java.time.LocalDateTime;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class CommentDto {
-    private Long id;
-    @NotEmpty
+public class ItemRequestCreate {
+
     @NotNull
-    private String text;
-    private String authorName;
-    private LocalDateTime created;
+    @NotEmpty
+    private String description;
 }

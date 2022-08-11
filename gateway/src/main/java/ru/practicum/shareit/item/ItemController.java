@@ -10,6 +10,7 @@ import ru.practicum.shareit.item.request.ItemUpdateRequest;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 
 @RestController
 @RequestMapping(path = "/items")
@@ -22,9 +23,9 @@ public class ItemController {
     @GetMapping
     public Object getItemsOfUser(@RequestHeader("X-Sharer-User-Id") @Positive Long userPrincipal,
                                                         @RequestParam(value = "from",
-                                                                required = false) Integer from,
+                                                                required = false) @PositiveOrZero Integer from,
                                                         @RequestParam(value = "size",
-                                                                required = false) Integer size) {
+                                                                required = false) @Positive Integer size) {
         log.info("Getting items of user with id " + userPrincipal);
 
         return itemClient.getItemsOfUser(userPrincipal, from, size);
@@ -59,9 +60,9 @@ public class ItemController {
     public Object searchItems(@RequestParam(value = "text", required = false) String text,
                               @RequestHeader("X-Sharer-User-Id") @Positive Long userPrincipal,
                               @RequestParam(value = "from",
-                                      required = false) Integer from,
+                                      required = false) @PositiveOrZero Integer from,
                               @RequestParam(value = "size",
-                                      required = false) Integer size) {
+                                      required = false) @Positive Integer size) {
         log.info("Searching in items by text: " + text);
 
         return itemClient.search(text, userPrincipal, from, size);
