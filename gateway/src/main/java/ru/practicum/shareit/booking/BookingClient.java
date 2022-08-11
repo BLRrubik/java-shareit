@@ -27,7 +27,7 @@ public class BookingClient extends BaseClient {
         );
     }
 
-    public Object getBookings(long userId, BookingState state, Integer from, Integer size) {
+    public Object getBookings(Long userId, BookingState state, Integer from, Integer size) {
         Map<String, Object> parameters = Map.of(
                 "state", state.name(),
                 "from", from,
@@ -36,11 +36,29 @@ public class BookingClient extends BaseClient {
         return get("", userId, parameters);
     }
 
-    public Object bookItem(long userId, BookItemRequestDto requestDto) {
+    public Object bookItem(Long userId, BookItemRequestDto requestDto) {
         return post("", userId, requestDto);
     }
 
-    public Object getBooking(long userId, Long bookingId) {
+    public Object getBooking(Long userId, Long bookingId) {
         return get("/" + bookingId, userId);
     }
+
+    public Object getOwnerBookings (Long userId, BookingState state, Integer from, Integer size) {
+        Map<String, Object> parameters = Map.of(
+                "state", state.name(),
+                "from", from,
+                "size", size
+        );
+        return get("/owner", userId, parameters);
+    }
+
+    public Object approveBooking(Long bookingId, Boolean approved, Long userId) {
+        Map<String, Object> parameters = Map.of(
+                "approved", approved
+        );
+
+        return patch("/" + bookingId, userId, parameters);
+    }
+
 }

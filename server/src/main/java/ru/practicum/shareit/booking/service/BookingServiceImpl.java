@@ -127,6 +127,10 @@ public class BookingServiceImpl implements BookingService {
             throw new BookingUnsupportedTypeException("Unknown state: UNSUPPORTED_STATUS");
         }
 
+        if (from == null || size == null) {
+            return Page.empty();
+        }
+
         switch (state) {
             case PAST:
                 return BookingMapper.convertPageToDto(bookingRepository.findAllByBookerAndEndIsBeforeOrderByStartDesc(
@@ -195,6 +199,10 @@ public class BookingServiceImpl implements BookingService {
             state = State.valueOf(stringState);
         } catch (IllegalArgumentException e) {
             throw new BookingUnsupportedTypeException("Unknown state: UNSUPPORTED_STATUS");
+        }
+
+        if (from == null || size == null) {
+            return Page.empty();
         }
 
         Page<Booking> bookings = bookingRepository.findForOwner(owner.getId(), PageRequest.of(
