@@ -3,11 +3,11 @@ package ru.practicum.shareit.booking.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.booking.State;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.requests.BookingCreateRequest;
 import ru.practicum.shareit.booking.service.BookingService;
 
+import javax.validation.constraints.Positive;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,7 +32,7 @@ public class BookingController {
 
     @PatchMapping("/{bookingId}")
     public ResponseEntity<BookingDto> approveBooking(@PathVariable("bookingId") Long bookingId,
-                                                     @RequestParam(value = "approved", required = true) boolean approve,
+                                                     @RequestParam(value = "approved") boolean approve,
                                                      @RequestHeader("X-Sharer-User-Id") Long userPrincipal) {
 
         return ResponseEntity.of(Optional.of(bookingService.approveBooking(bookingId, approve, userPrincipal)));
@@ -48,17 +48,26 @@ public class BookingController {
 
     @GetMapping()
     public ResponseEntity<List<BookingDto>> getBookingsByCurrentUser(@RequestParam(value = "state", required = false,
-            defaultValue = "ALL") State state,
+                                                                        defaultValue = "ALL") String state,
+                                                                     @RequestParam(value = "from", required = false)
+                                                                     @Positive Integer from,
+                                                                     @RequestParam(value = "size", required = false)
+                                                                         @Positive Integer size,
                                                                      @RequestHeader("X-Sharer-User-Id")
                                                                      Long userPrincipal) {
-        return ResponseEntity.of(Optional.of(bookingService.getBookingsByUser(userPrincipal, state)));
+        return ResponseEntity.of(Optional.of(
+                bookingService.getBookingsByUser(userPrincipal, state, from, size).getContent()));
     }
 
     @GetMapping("/owner")
     public ResponseEntity<List<BookingDto>> getBookingsByOwner(@RequestParam(value = "state", required = false,
-            defaultValue = "ALL") State state,
-                                                               @RequestHeader("X-Sharer-User-Id")
-                                                               Long userPrincipal) {
-        return ResponseEntity.of(Optional.of(bookingService.getBookingsByOwner(userPrincipal, state)));
+                                                                defaultValue = "ALL") String state,
+                                                               @RequestParam(value = "from", required = false)
+                                                               @Positive Integer from,
+                                                               @RequestParam(value = "size", required = false)
+                                                                   @Positive Integer size,
+                                                               @RequestHeader("X-Sharer-User-Id") Long userPrincipal) {
+        return ResponseEntity.of(Optional.of(
+                bookingService.getBookingsByOwner(userPrincipal, state, from, size).getContent()));
     }
 }

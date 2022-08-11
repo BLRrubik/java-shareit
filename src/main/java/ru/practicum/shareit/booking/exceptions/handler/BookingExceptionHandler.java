@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import ru.practicum.shareit.booking.exceptions.BookingAccessException;
 import ru.practicum.shareit.booking.exceptions.BookingNotFoundException;
+import ru.practicum.shareit.booking.exceptions.BookingUnsupportedTypeException;
 import ru.practicum.shareit.booking.exceptions.BookingValidateException;
 import ru.practicum.shareit.exception.ExceptionDTO;
 
@@ -26,5 +27,10 @@ public class BookingExceptionHandler {
     @ExceptionHandler(BookingNotFoundException.class)
     public ResponseEntity<ExceptionDTO> notFound(BookingNotFoundException e) {
         return new ResponseEntity<>(new ExceptionDTO(e.getMessage(), LocalDateTime.now()), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(BookingUnsupportedTypeException.class)
+    public ResponseEntity<ExceptionDTO> unsupportedType(BookingUnsupportedTypeException e) {
+        return new ResponseEntity<>(new ExceptionDTO(e.getMessage(), LocalDateTime.now()), HttpStatus.BAD_REQUEST);
     }
 }
