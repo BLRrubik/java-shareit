@@ -44,10 +44,6 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     @Override
     public Page<ItemRequestDto> getAll(Integer from, Integer size, Long userPrincipal) {
 
-        if (size == null || from == null) {
-            return Page.empty();
-        }
-
         return ItemRequestMapper.convertPageToDto(itemRequestRepository.findAll(
                 PageRequest.of(
                         from,

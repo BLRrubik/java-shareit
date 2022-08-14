@@ -201,10 +201,6 @@ public class BookingServiceImpl implements BookingService {
             throw new BookingUnsupportedTypeException("Unknown state: UNSUPPORTED_STATUS");
         }
 
-        if (from == null || size == null) {
-            return Page.empty();
-        }
-
         Page<Booking> bookings = bookingRepository.findForOwner(owner.getId(), PageRequest.of(
                 from,
                 size,

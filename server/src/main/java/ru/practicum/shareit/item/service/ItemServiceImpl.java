@@ -156,10 +156,6 @@ public class ItemServiceImpl implements ItemService {
             return Page.empty();
         }
 
-        if (from == null || size == null) {
-            return Page.empty();
-        }
-
         Page<Item> page =
                 itemRepository.findAllByNameOrDescriptionContainingIgnoreCaseAndAvailableTrue(text,
                         text,
